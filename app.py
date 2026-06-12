@@ -2,7 +2,7 @@ import streamlit as st
 import pickle
 import pandas as pd
 import numpy as np
-
+import joblib
 # ─────────────────────────────────────────────
 # Page Config
 # ─────────────────────────────────────────────
@@ -166,8 +166,8 @@ st.markdown("""
 # ─────────────────────────────────────────────
 @st.cache_resource
 def load_model():
-    with open("best_car_price_model.pkl", "rb") as f:
-        return pickle.load(f)
+    model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "best_car_price_model.pkl")
+    return joblib.load(model_path)
 
 model = load_model()
 
