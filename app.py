@@ -250,12 +250,13 @@ if st.button("🔍  Estimate Market Price"):
         "insurance_valid":     [insurance_valid],
     })
 
-    predicted_price = model.predict(input_data)[0]
+    predicted_price_usd = model.predict(input_data)[0]
+    predicted_price_inr = predicted_price_usd * 84.5
 
     st.markdown(f"""
     <div class="result-card">
         <div class="result-label">Estimated Market Value</div>
-        <div class="result-price">$ {predicted_price:,.0f}</div>
-        <div class="result-note">Prediction based on current market data · Results are indicative estimates</div>
+        <div class="result-price">₹ {predicted_price_inr:,.0f}</div>
+        <div class="result-note">≈ $ {predicted_price_usd:,.0f} USD &nbsp;·&nbsp; Results are indicative estimates</div>
     </div>
     """, unsafe_allow_html=True)
