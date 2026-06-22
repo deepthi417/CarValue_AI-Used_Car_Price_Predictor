@@ -165,20 +165,12 @@ st.markdown("""
 # ─────────────────────────────────────────────
 # Load Model
 # ─────────────────────────────────────────────
-# ─────────────────────────────────────────────
-# Load Model
-# ─────────────────────────────────────────────
 @st.cache_resource
 def load_model():
     model_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
+        os.path.dirname(__file__),
         "best_pipeline.joblib"
     )
-
-    if not os.path.exists(model_path):
-        st.error(f"Model file not found: {model_path}")
-        st.stop()
-
     return joblib.load(model_path)
 
 model = load_model()
