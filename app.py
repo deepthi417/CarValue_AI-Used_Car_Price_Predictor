@@ -168,12 +168,10 @@ st.markdown("""
 @st.cache_resource
 def load_model():
     model_path = os.path.join(
-        os.path.dirname(__file__),
-        "model,pkl"
+        os.path.dirname(os.path.abspath(__file__)),
+        "best_pipeline.joblib"
     )
     return joblib.load(model_path)
-
-model = load_model()
 # ─────────────────────────────────────────────
 # Hero Header
 # ─────────────────────────────────────────────
