@@ -168,7 +168,8 @@ st.markdown("""
 @st.cache_resource
 def load_model():
     model_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
+        os.path.dirname(__file__)),
+        "models",
         "best_pipeline.joblib"
     )
     return joblib.load(model_path)
