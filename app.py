@@ -169,7 +169,7 @@ st.markdown("""
 def load_model():
     model_path = os.path.join(
         os.path.dirname(__file__),
-        "best_pipeline.joblib"
+        "model,pkl"
     )
     return joblib.load(model_path)
 
