@@ -172,6 +172,8 @@ def load_model():
         "best_pipeline.joblib"
     )
     return joblib.load(model_path)
+
+model = load_model()
 # ─────────────────────────────────────────────
 # Hero Header
 # ─────────────────────────────────────────────
