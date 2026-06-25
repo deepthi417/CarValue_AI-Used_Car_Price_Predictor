@@ -1,144 +1,192 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import joblib
-import os
+from pathlib import Path
 
 # ---------------------------------------------------
 # PAGE CONFIG
 # ---------------------------------------------------
 st.set_page_config(
-    page_title="CarValue AI — Used Car Price Predictor",
+    page_title="🚗 CarValue AI",
     page_icon="🚗",
     layout="centered"
 )
-
-# ---------------------------------------------------
-# YOUR CSS BLOCK GOES HERE
-# ---------------------------------------------------
-# st.markdown("""...""", unsafe_allow_html=True)
 
 # ---------------------------------------------------
 # LOAD MODEL
 # ---------------------------------------------------
 @st.cache_resource
 def load_model():
-    model_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "best_pipeline.joblib"
-    )
+    model_path = Path("models") / "best_pipeline.joblib"
+
+    if not model_path.exists():
+        raise FileNotFoundError(
+            f"Model file not found: {model_path}"
+        )
 
     return joblib.load(model_path)
 
 try:
     model = load_model()
 except Exception as e:
-    st.error("❌ Failed to load model")
+    st.error("❌ Unable to load trained model.")
     st.exception(e)
     st.stop()
 
 # ---------------------------------------------------
 # HEADER
 # ---------------------------------------------------
-st.markdown("""
-<div class="hero-header">
-    <div class="hero-badge">AI-Powered Valuation</div>
-    <div class="hero-title">CarValue <span>AI</span></div>
-    <div class="hero-subtitle">
-        Used Car Price Predictor — Enter car details to get an instant market estimate
-    </div>
-</div>
-""", unsafe_allow_html=True)
+st.title("🚗 CarValue AI")
+st.subheader("Used Car Price Prediction")
+
+st.markdown(
+    """
+    Enter the vehicle details below and get an AI-powered
+    estimate of its market value.
+    """
+)
+
+st.divider()
 
 # ---------------------------------------------------
-# INPUTS
+# INPUT FORM
 # ---------------------------------------------------
-brand = st.selectbox(
-    "Brand",
-    [
-        "Toyota","Honda","BMW","Ford","Hyundai",
-        "Nissan","Chevrolet","Kia","Volkswagen","Tesla"
-    ]
-)
+with st.form("prediction_form"):
 
-make_year = st.number_input(
-    "Make Year",
-    min_value=1995,
-    max_value=2023,
-    value=2015
-)
+    col1, col2 = st.columns(2)
 
-fuel_type = st.selectbox(
-    "Fuel Type",
-    ["Petrol", "Diesel", "Electric"]
-)
+    with col1:
+        brand = st.selectbox(
+            "Brand",
+            [
+                "Toyota",
+                "Honda",
+                "BMW",
+                "Ford",
+                "Hyundai",
+                "Nissan",
+                "Chevrolet",
+                "Kia",
+                "Volkswagen",
+                "Tesla"
+            ]
+        )
 
-transmission = st.selectbox(
-    "Transmission",
-    ["Manual", "Automatic"]
-)
+        make_year = st.number_input(
+            "Make Year",
+            min_value=1995,
+            max_value=2025,
+            value=2018
+        )
 
-color = st.selectbox(
-    "Color",
-    ["White","Black","Blue","Red","Gray","Silver"]
-)
+        fuel_type = st.selectbox(
+            "Fuel Type",
+            ["Petrol", "Diesel", "Electric"]
+        )
 
-mileage_kmpl = st.number_input(
-    "Mileage (kmpl)",
-    value=18.0
-)
+        transmission = st.selectbox(
+            "Transmission",
+            ["Manual", "Automatic"]
+        )
 
-engine_cc = st.number_input(
-    "Engine Capacity (cc)",
-    value=1500
-)
+        color = st.selectbox(
+            "Color",
+            [
+                "White",
+                "Black",
+                "Blue",
+                "Red",
+                "Gray",
+                "Silver"
+            ]
+        )
 
-owner_count = st.number_input(
-    "Number of Previous Owners",
-    value=1
-)
+    with col2:
+        mileage_kmpl = st.number_input(
+            "Mileage (km/l)",
+            min_value=1.0,
+            max_value=50.0,
+            value=18.0
+        )
 
-accidents_reported = st.number_input(
-    "Accidents Reported",
-    value=0
-)
+        engine_cc = st.number_input(
+            "Engine Capacity (cc)",
+            min_value=500,
+            max_value=5000,
+            value=1500
+        )
 
-service_history = st.selectbox(
-    "Service History",
-    ["Full", "Partial", "Unknown"]
-)
+        owner_count = st.number_input(
+            "Previous Owners",
+            min_value=0,
+            max_value=10,
+            value=1
+        )
 
-insurance_valid = st.selectbox(
-    "Insurance Valid",
-    ["Yes", "No"]
-)
+        accidents_reported = st.number_input(
+            "Accidents Reported",
+            min_value=0,
+            max_value=20,
+            value=0
+        )
+
+        service_history = st.selectbox(
+            "Service History",
+            ["Full", "Partial", "Unknown"]
+        )
+
+        insurance_valid = st.selectbox(
+            "Insurance Valid",
+            ["Yes", "No"]
+        )
+
+    submitted = st.form_submit_button(
+        "🔍 Estimate Market Price"
+    )
 
 # ---------------------------------------------------
-# PREDICT
+# PREDICTION
 # ---------------------------------------------------
-if st.button("🔍 Estimate Market Price"):
+if submitted:
 
     input_data = pd.DataFrame({
-        "make_year":[make_year],
-        "mileage_kmpl":[mileage_kmpl],
-        "engine_cc":[engine_cc],
-        "fuel_type":[fuel_type],
-        "owner_count":[owner_count],
-        "brand":[brand],
-        "transmission":[transmission],
-        "color":[color],
-        "service_history":[service_history],
-        "accidents_reported":[accidents_reported],
-        "insurance_valid":[insurance_valid]
+        "make_year": [make_year],
+        "mileage_kmpl": [mileage_kmpl],
+        "engine_cc": [engine_cc],
+        "fuel_type": [fuel_type],
+        "owner_count": [owner_count],
+        "brand": [brand],
+        "transmission": [transmission],
+        "color": [color],
+        "service_history": [service_history],
+        "accidents_reported": [accidents_reported],
+        "insurance_valid": [insurance_valid]
     })
 
     try:
-        predicted_price = model.predict(input_data)[0]
+        prediction = model.predict(input_data)[0]
 
-        st.success(
-            f"Estimated Market Value: ${predicted_price:,.0f}"
+        prediction = max(0, prediction)
+
+        st.success("✅ Prediction Successful")
+
+        st.metric(
+            label="Estimated Market Value",
+            value=f"${prediction:,.0f}"
         )
 
+        with st.expander("View Input Data"):
+            st.dataframe(input_data)
+
     except Exception as e:
-        st.error("Prediction failed")
+        st.error("❌ Prediction failed")
         st.exception(e)
+
+# ---------------------------------------------------
+# FOOTER
+# ---------------------------------------------------
+st.divider()
+
+st.caption(
+    "CarValue AI • Machine Learning Powered Used Car Valuation"
+)
