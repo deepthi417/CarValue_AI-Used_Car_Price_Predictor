@@ -17,22 +17,15 @@ st.set_page_config(
 # ---------------------------------------------------
 @st.cache_resource
 def load_model():
-    model_path = Path("models") / "best_pipeline.joblib"
+    model_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "best_pipeline.joblib"
+    )
 
-    if not model_path.exists():
-        raise FileNotFoundError(
-            f"Model file not found: {model_path}"
-        )
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"Model file not found: {model_path}")
 
     return joblib.load(model_path)
-
-try:
-    model = load_model()
-except Exception as e:
-    st.error("❌ Unable to load trained model.")
-    st.exception(e)
-    st.stop()
-
 # ---------------------------------------------------
 # HEADER
 # ---------------------------------------------------
