@@ -5,7 +5,7 @@ import joblib
 # -----------------------------
 # Load Trained Pipeline
 # -----------------------------
-model = joblib.load("best_model.pkl")
+model = joblib.load("model.pkl")
 
 # -----------------------------
 # Page Configuration
