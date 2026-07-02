@@ -249,13 +249,23 @@ if st.button("🔍  Estimate Market Price"):
         "accidents_reported":  [accidents_reported],
         "insurance_valid":     [insurance_valid],
     })
+# Predict price in USD
+predicted_price_usd = float(model.predict(input_data)[0])
 
-    predicted_price = model.predict(input_data)[0]
+# USD to INR conversion rate
+USD_TO_INR = 86.0   # Update if needed
 
-    st.markdown(f"""
-    <div class="result-card">
-        <div class="result-label">Estimated Market Value</div>
-        <div class="result-price">$ {predicted_price:,.0f}</div>
-        <div class="result-note">Prediction based on current market data · Results are indicative estimates</div>
+# Convert to INR
+predicted_price_inr = predicted_price_usd * USD_TO_INR
+
+# Display result
+st.markdown(f"""
+<div class="result-card">
+    <div class="result-label">Estimated Market Value</div>
+    <div class="result-price">₹ {predicted_price_inr:,.0f}</div>
+    <div class="result-note">
+        Converted from USD using an exchange rate of ₹{USD_TO_INR} per US Dollar.
     </div>
-    """, unsafe_allow_html=True)
+</div>
+""", unsafe_allow_html=True)
+   
