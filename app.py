@@ -140,7 +140,7 @@ def load_model():
 
     model_path=os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
-        "best_pipeline.joblib"
+        "model.pkl"
     )
 
     if not os.path.exists(model_path):
